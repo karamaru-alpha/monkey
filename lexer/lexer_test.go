@@ -9,21 +9,56 @@ import (
 )
 
 func TestLexer_NextToken(t *testing.T) {
-	input := "+(),;"
+	input := `let five = 5;
+let ten = 10;
 
+let add = fn(x, y) {
+	x + y;
+};
+
+let result = add(five, ten);
+`
 	expected := []token.Token{
-		{Type: token.PLUS, Literal: "+"},
+		{Type: token.LET, Literal: "let"},
+		{Type: token.IDENT, Literal: "five"},
+		{Type: token.ASSIGN, Literal: "="},
+		{Type: token.INT, Literal: "5"},
+		{Type: token.SEMICOLUN, Literal: ";"},
+		{Type: token.LET, Literal: "let"},
+		{Type: token.IDENT, Literal: "ten"},
+		{Type: token.ASSIGN, Literal: "="},
+		{Type: token.INT, Literal: "10"},
+		{Type: token.SEMICOLUN, Literal: ";"},
+		{Type: token.LET, Literal: "let"},
+		{Type: token.IDENT, Literal: "add"},
+		{Type: token.ASSIGN, Literal: "="},
+		{Type: token.FUNCTION, Literal: "fn"},
 		{Type: token.LPAREN, Literal: "("},
-		{Type: token.RPAREN, Literal: ")"},
+		{Type: token.IDENT, Literal: "x"},
 		{Type: token.COMMA, Literal: ","},
+		{Type: token.IDENT, Literal: "y"},
+		{Type: token.RPAREN, Literal: ")"},
+		{Type: token.LBRACE, Literal: "{"},
+		{Type: token.IDENT, Literal: "x"},
+		{Type: token.PLUS, Literal: "+"},
+		{Type: token.IDENT, Literal: "y"},
+		{Type: token.SEMICOLUN, Literal: ";"},
+		{Type: token.RBRACE, Literal: "}"},
+		{Type: token.SEMICOLUN, Literal: ";"},
+		{Type: token.LET, Literal: "let"},
+		{Type: token.IDENT, Literal: "result"},
+		{Type: token.ASSIGN, Literal: "="},
+		{Type: token.IDENT, Literal: "add"},
+		{Type: token.LPAREN, Literal: "("},
+		{Type: token.IDENT, Literal: "five"},
+		{Type: token.COMMA, Literal: ","},
+		{Type: token.IDENT, Literal: "ten"},
+		{Type: token.RPAREN, Literal: ")"},
 		{Type: token.SEMICOLUN, Literal: ";"},
 	}
 
 	l := New(input)
-	res := make([]token.Token, 0, len(input))
-	for i := 0; i < len(input); i++ {
-		res = append(res, l.NextToken())
+	for i := 0; i < len(expected); i++ {
+		assert.Equal(t, expected[i], l.NextToken())
 	}
-
-	assert.Equal(t, expected, res)
 }
