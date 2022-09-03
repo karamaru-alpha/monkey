@@ -1,6 +1,6 @@
 package token
 
-type Type string
+type Type int32
 
 type Token struct {
 	Type    Type
@@ -8,45 +8,93 @@ type Token struct {
 }
 
 const (
-	// その他
-	INLLEGAL = "ILLEGAL" // 未知のトークン
-	EOF      = "EOF"     // ファイル終端
-
-	// 識別子 リテラル
-	IDENT = "IDENT"
-	INT   = "INT"
-
-	// 演算子
-	ASSIGN   = "="
-	PLUS     = "+"
-	MINUS    = "-"
-	BANG     = "!"
-	ASTERISK = "*"
-	SLASH    = "/"
-
-	EQ     = "=="
-	NOT_EQ = "!="
-	LT     = "<"
-	GT     = ">"
-
-	// デリミタ
-	COMMA     = ","
-	SEMICOLUN = ";"
-
-	LPAREN = "("
-	RPAREN = ")"
-	LBRACE = "{"
-	RBRACE = "}"
-
-	// キーワード
-	FUNCTION = "FUNCTION"
-	LET      = "LET"
-	TRUE     = "TURE"
-	FALSE    = "FALSE"
-	IF       = "IF"
-	ELSE     = "ELSE"
-	RETURN   = "RETURN"
+	INLLEGAL Type = iota
+	EOF
+	IDENT
+	INT
+	ASSIGN
+	PLUS
+	MINUS
+	BANG
+	ASTERISK
+	SLASH
+	EQ
+	NOT_EQ
+	LT
+	GT
+	COMMA
+	SEMICOLUN
+	LPAREN
+	RPAREN
+	LBRACE
+	RBRACE
+	FUNCTION
+	LET
+	TRUE
+	FALSE
+	IF
+	ELSE
+	RETURN
 )
+
+func (typ Type) String() string {
+	switch typ {
+	case EOF:
+		return "EOF"
+	case IDENT:
+		return "IDENT"
+	case INT:
+		return "INT"
+	case ASSIGN:
+		return "ASSIGN"
+	case PLUS:
+		return "PLUS"
+	case MINUS:
+		return "MINUS"
+	case BANG:
+		return "BANG"
+	case ASTERISK:
+		return "ASTERISK"
+	case SLASH:
+		return "SLASH"
+	case EQ:
+		return "EQ"
+	case NOT_EQ:
+		return "NOT_EQ"
+	case LT:
+		return "LT"
+	case GT:
+		return "GT"
+	case COMMA:
+		return "COMMA"
+	case SEMICOLUN:
+		return "SEMICOLUN"
+	case LPAREN:
+		return "LPAREN"
+	case RPAREN:
+		return "RPAREN"
+	case LBRACE:
+		return "LBRACE"
+	case RBRACE:
+		return "RBRACE"
+	case FUNCTION:
+		return "FUNCTION"
+	case LET:
+		return "LET"
+	case TRUE:
+		return "TRUE"
+	case FALSE:
+		return "FALSE"
+	case IF:
+		return "IF"
+	case ELSE:
+		return "ELSE"
+	case RETURN:
+		return "RETURN"
+	default:
+		return "ILLEGAL"
+	}
+}
 
 var keywords = map[string]Type{
 	"fn":     FUNCTION,
