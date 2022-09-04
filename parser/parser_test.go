@@ -54,12 +54,12 @@ return add(1, 2);
 
 	var tests = []*ast.ReturnStatement{
 		{
-			Token: token.Token{Type: token.RETURN, Literal: "return"},
-			Value: nil,
+			Token:       token.Token{Type: token.RETURN, Literal: "return"},
+			ReturnValue: nil,
 		},
 		{
-			Token: token.Token{Type: token.RETURN, Literal: "return"},
-			Value: nil,
+			Token:       token.Token{Type: token.RETURN, Literal: "return"},
+			ReturnValue: nil,
 		},
 	}
 
