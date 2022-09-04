@@ -21,6 +21,7 @@ func Start(in io.Reader, _ io.Writer) {
 
 		line := scanner.Text()
 		if line == "exit" {
+			fmt.Println("bye!")
 			return
 		}
 		l := lexer.New(line)
