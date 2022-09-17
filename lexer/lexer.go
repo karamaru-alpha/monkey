@@ -81,7 +81,7 @@ func (l *Lexer) NextToken() token.Token {
 			tok.Literal = l.readNumber()
 			return tok
 		}
-		return token.New(token.INLLEGAL, l.ch)
+		return token.New(token.ILLEGAL, l.ch)
 	}
 }
 

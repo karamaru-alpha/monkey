@@ -68,6 +68,30 @@ return add(1, 2);
 	}
 }
 
+func TestParser_IdentifierExpression(t *testing.T) {
+	//input := "foobar;"
+	//
+	//l := lexer.New(input)
+	//p := New(l)
+	//program := p.ParseProgram()
+	//checkParseError(t, p)
+	//
+	//var tests = []*ast.ReturnStatement{
+	//	{
+	//		Token:       token.Token{Type: token.RETURN, Literal: "return"},
+	//		ReturnValue: nil,
+	//	},
+	//	{
+	//		Token:       token.Token{Type: token.RETURN, Literal: "return"},
+	//		ReturnValue: nil,
+	//	},
+	//}
+	//
+	//for i, tt := range tests {
+	//	assert.Equal(t, tt, program.Statements[i].(*ast.ReturnStatement))
+	//}
+}
+
 func checkParseError(t *testing.T, p *Parser) {
 	for _, err := range p.Errors() {
 		t.Error(err)
