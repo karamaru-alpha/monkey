@@ -93,7 +93,7 @@ func TestParser_IdentifierExpression(t *testing.T) {
 }
 
 func checkParseError(t *testing.T, p *Parser) {
-	for _, err := range p.Errors() {
+	for _, err := range p.errors {
 		t.Error(err)
 	}
 }

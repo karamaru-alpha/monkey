@@ -29,6 +29,8 @@ func New(lex *lexer.Lexer) *Parser {
 	p.prefixParseFns = make(map[token.Type]prefixParseFn)
 	p.registerPrefix(token.IDENT, p.parseIdentifier)
 	p.registerPrefix(token.INT, p.parseIntegerLiteral)
+	p.registerPrefix(token.BANG, p.parsePrefixExpression)
+	p.registerPrefix(token.MINUS, p.parsePrefixExpression)
 	p.nextToken()
 	p.nextToken()
 	return p
@@ -112,7 +114,7 @@ const (
 	LESSGREATER // > or <
 	SUM         // +
 	PRODUCT     // *
-	PREDIX      // -x or !x
+	PREFIX      // -x or !x
 	CALL        // func(x)
 )
 
@@ -130,6 +132,7 @@ func (p *Parser) parseExpressionStatement() *ast.ExpressionStatement {
 func (p *Parser) parseExpression(precedence int) ast.Expression {
 	prefix := p.prefixParseFns[p.currentToken.Type]
 	if prefix == nil {
+		p.errors = append(p.errors, fmt.Errorf("preFn is not registered. TokenType: %s", p.currentToken.Type))
 		return nil
 	}
 	leftExp := prefix()
@@ -138,10 +141,6 @@ func (p *Parser) parseExpression(precedence int) ast.Expression {
 
 func (p *Parser) parseIdentifier() ast.Expression {
 	return &ast.Identifier{Token: p.currentToken, Value: p.currentToken.Literal}
-}
-
-func (p *Parser) Errors() []error {
-	return p.errors
 }
 
 func (p *Parser) parseIntegerLiteral() ast.Expression {
@@ -155,4 +154,14 @@ func (p *Parser) parseIntegerLiteral() ast.Expression {
 	lit.Value = value
 
 	return lit
+}
+
+func (p *Parser) parsePrefixExpression() ast.Expression {
+	expression := &ast.PrefixExpression{
+		Token:    p.currentToken,
+		Operator: p.currentToken.Literal,
+	}
+	p.nextToken()
+	expression.Right = p.parseExpression(PREFIX)
+	return expression
 }
