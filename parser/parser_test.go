@@ -93,6 +93,18 @@ func TestOperator_PrecedenceParsing(t *testing.T) {
 			input:    "false != true",
 			expected: "(false != true)",
 		},
+		{
+			input:    "1 + 2 + 3",
+			expected: "((1 + 2) + 3)",
+		},
+		{
+			input:    "1 / (2 + 3)",
+			expected: "(1 / (2 + 3))",
+		},
+		{
+			input:    "1 + (2 + 3) + 4",
+			expected: "((1 + (2 + 3)) + 4)",
+		},
 	}
 
 	for _, tt := range tests {
