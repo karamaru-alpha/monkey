@@ -107,7 +107,10 @@ func (p *Parser) parseLetStatement() *ast.LetStatement {
 	}
 	p.nextToken()
 
-	for p.currentToken.Type != token.SEMICOLUN {
+	p.nextToken()
+	stmt.Value = p.parseExpression(LOWEST)
+
+	for p.currentToken.Type == token.SEMICOLUN {
 		p.nextToken()
 	}
 
@@ -116,11 +119,13 @@ func (p *Parser) parseLetStatement() *ast.LetStatement {
 
 func (p *Parser) parseReturnStatement() *ast.ReturnStatement {
 	stmt := &ast.ReturnStatement{Token: p.currentToken}
-
 	p.nextToken()
+
+	stmt.ReturnValue = p.parseExpression(LOWEST)
 	for p.currentToken.Type != token.SEMICOLUN {
 		p.nextToken()
 	}
+
 	return stmt
 }
 
@@ -370,4 +375,12 @@ func (p *Parser) parseCallArguments() []ast.Expression {
 	p.nextToken()
 
 	return args
+}
+
+func (p *Parser) Errors() []string {
+	ret := make([]string, len(p.errors))
+	for _, err := range p.errors {
+		ret = append(ret, err.Error())
+	}
+	return ret
 }

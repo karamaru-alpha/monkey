@@ -6,10 +6,10 @@ import (
 	"io"
 
 	"github.com/karamaru-alpha/monkey/lexer"
-	"github.com/karamaru-alpha/monkey/token"
+	"github.com/karamaru-alpha/monkey/parser"
 )
 
-func Start(in io.Reader, _ io.Writer) {
+func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
 
 	for {
@@ -25,9 +25,16 @@ func Start(in io.Reader, _ io.Writer) {
 			return
 		}
 		l := lexer.New(line)
+		p := parser.New(l)
 
-		for tok := l.NextToken(); tok.Type != token.EOF; tok = l.NextToken() {
-			fmt.Printf("%+v\n", tok)
+		program := p.ParseProgram()
+		if len(p.Errors()) > 0 {
+			for _, msg := range p.Errors() {
+				io.WriteString(out, msg)
+			}
+			return
 		}
+		io.WriteString(out, program.String())
+		io.WriteString(out, "\n")
 	}
 }
