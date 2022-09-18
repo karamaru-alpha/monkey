@@ -241,3 +241,55 @@ func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 	expression.Right = p.parseExpression(precedence)
 	return expression
 }
+
+func (p *Parser) parseIfExpression() ast.Expression {
+	expression := &ast.IfExpression{Token: p.currentToken}
+
+	if p.peekToken.Type != token.LPAREN {
+		return nil
+	}
+	p.nextToken()
+
+	p.nextToken()
+	expression.Condition = p.parseExpression(LOWEST)
+
+	if p.peekToken.Type != token.RPAREN {
+		return nil
+	}
+	p.nextToken()
+
+	if p.peekToken.Type != token.LBRACE {
+		return nil
+	}
+	p.nextToken()
+
+	expression.Consequence = p.parseBlockStatement()
+
+	if p.peekToken.Type == token.ELSE {
+		p.nextToken()
+
+		if p.peekToken.Type != token.LBRACE {
+			return nil
+		}
+		p.nextToken()
+
+		expression.Alternative = p.parseBlockStatement()
+	}
+
+	return expression
+}
+
+func (p *Parser) parseBlockStatement() *ast.BlockStatement {
+	block := &ast.BlockStatement{Token: p.currentToken}
+	block.Statements = make([]ast.Statement, 0)
+	p.nextToken()
+
+	for p.currentToken.Type != token.RBRACE && p.currentToken.Type != token.EOF {
+		stmt := p.parseStatement()
+		if stmt != nil {
+			block.Statements = append(block.Statements, stmt)
+		}
+		p.nextToken()
+	}
+	return block
+}
