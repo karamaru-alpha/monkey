@@ -77,6 +77,18 @@ func TestOperator_PrecedenceParsing(t *testing.T) {
 			input:    "-a * b",
 			expected: "((-a) * b)",
 		},
+		{
+			input:    "1 < 2 == 4 > 3",
+			expected: "((1 < 2) == (4 > 3))",
+		},
+		{
+			input:    "1 / 2; 3 / 4",
+			expected: "(1 / 2)(3 / 4)",
+		},
+		{
+			input:    "1 + 2 * 3",
+			expected: "(1 + (2 * 3))",
+		},
 	}
 
 	for _, tt := range tests {
