@@ -82,12 +82,16 @@ func TestOperator_PrecedenceParsing(t *testing.T) {
 			expected: "((1 < 2) == (4 > 3))",
 		},
 		{
-			input:    "1 / 2; 3 / 4",
-			expected: "(1 / 2)(3 / 4)",
+			input:    "1 / 2; 3 * 4",
+			expected: "(1 / 2)(3 * 4)",
 		},
 		{
 			input:    "1 + 2 * 3",
 			expected: "(1 + (2 * 3))",
+		},
+		{
+			input:    "false != true",
+			expected: "(false != true)",
 		},
 	}
 
