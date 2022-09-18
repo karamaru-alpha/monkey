@@ -19,7 +19,7 @@ let y = 10;
 	program := p.ParseProgram()
 	checkParseError(t, p)
 
-	var tests = []*ast.LetStatement{
+	tests := []*ast.LetStatement{
 		{
 			Token: token.Token{Type: token.LET, Literal: "let"},
 			Name: &ast.Identifier{
@@ -68,28 +68,27 @@ return add(1, 2);
 	}
 }
 
-func TestParser_IdentifierExpression(t *testing.T) {
-	//input := "foobar;"
-	//
-	//l := lexer.New(input)
-	//p := New(l)
-	//program := p.ParseProgram()
-	//checkParseError(t, p)
-	//
-	//var tests = []*ast.ReturnStatement{
-	//	{
-	//		Token:       token.Token{Type: token.RETURN, Literal: "return"},
-	//		ReturnValue: nil,
-	//	},
-	//	{
-	//		Token:       token.Token{Type: token.RETURN, Literal: "return"},
-	//		ReturnValue: nil,
-	//	},
-	//}
-	//
-	//for i, tt := range tests {
-	//	assert.Equal(t, tt, program.Statements[i].(*ast.ReturnStatement))
-	//}
+func TestOperator_PrecedenceParsing(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected string
+	}{
+		{
+			input:    "-a * b",
+			expected: "((-a) * b)",
+		},
+	}
+
+	for _, tt := range tests {
+		l := lexer.New(tt.input)
+		p := New(l)
+		program := p.ParseProgram()
+		checkParseError(t, p)
+
+		actual := program.String()
+		assert.Equal(t, tt.expected, actual)
+
+	}
 }
 
 func checkParseError(t *testing.T, p *Parser) {
