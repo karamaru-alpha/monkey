@@ -293,3 +293,49 @@ func (p *Parser) parseBlockStatement() *ast.BlockStatement {
 	}
 	return block
 }
+
+func (p *Parser) parseFunctionLiteral() ast.Expression {
+	lit := &ast.FunctionLiteral{Token: p.currentToken}
+
+	if p.peekToken.Type != token.LPAREN {
+		return nil
+	}
+	p.nextToken()
+
+	lit.Parameters = p.parseFunctionParameters()
+
+	if p.peekToken.Type != token.LBRACE {
+		return nil
+	}
+	p.nextToken()
+
+	lit.Body = p.parseBlockStatement()
+	return lit
+}
+
+func (p *Parser) parseFunctionParameters() []*ast.Identifier {
+	identifiers := make([]*ast.Identifier, 0)
+
+	if p.peekToken.Type == token.RPAREN {
+		p.nextToken()
+		return identifiers
+	}
+
+	p.nextToken()
+	ident := &ast.Identifier{Token: p.currentToken, Value: p.currentToken.Literal}
+	identifiers = append(identifiers, ident)
+
+	for p.peekToken.Type == token.COMMA {
+		p.nextToken()
+		p.nextToken()
+		ident := &ast.Identifier{Token: p.currentToken, Value: p.currentToken.Literal}
+		identifiers = append(identifiers, ident)
+	}
+
+	if p.peekToken.Type != token.RPAREN {
+		return nil
+	}
+	p.nextToken()
+
+	return identifiers
+}
