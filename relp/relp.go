@@ -15,7 +15,9 @@ func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
 	environment := object.NewEnvironment()
 
+	fmt.Println("interpreter in go console...")
 	for {
+
 		fmt.Print(">> ")
 		scanned := scanner.Scan()
 		if !scanned {
