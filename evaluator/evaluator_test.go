@@ -127,3 +127,22 @@ func TestEval_IfExpression(t *testing.T) {
 		assert.Equal(t, tt.expected, obj.(*object.Integer).Value)
 	}
 }
+
+func TestEval_ReturnStatement(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected int64
+	}{
+		{"return 1;", 1},
+		{"if (1 > 10) { return 10; } return 1;", 1},
+		{"if (1 < 10) { return 10; } return 1;", 10},
+	}
+
+	for _, tt := range tests {
+		l := lexer.New(tt.input)
+		p := parser.New(l)
+		program := p.ParseProgram()
+		obj := Eval(program)
+		assert.Equal(t, tt.expected, obj.(*object.Integer).Value)
+	}
+}
