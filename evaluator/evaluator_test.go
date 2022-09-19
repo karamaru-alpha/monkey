@@ -193,3 +193,22 @@ func TestEval_LetStatement(t *testing.T) {
 		assert.Equal(t, tt.expected, obj.(*object.Integer).Value)
 	}
 }
+
+func TestEval_FunctionStatement(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected int64
+	}{
+		{"let add = fn(a, b){ return a + b; }; add(1, 2);", 3},
+		{"fn(a, b){ return a + b; }(1, 2);", 3},
+	}
+
+	for _, tt := range tests {
+		l := lexer.New(tt.input)
+		p := parser.New(l)
+		program := p.ParseProgram()
+		env := object.NewEnvironment()
+		obj := Eval(program, env)
+		assert.Equal(t, tt.expected, obj.(*object.Integer).Value)
+	}
+}

@@ -1,8 +1,12 @@
 package object
 
 import (
+	"bytes"
 	"fmt"
 	"strconv"
+	"strings"
+
+	"github.com/karamaru-alpha/monkey/ast"
 )
 
 type Type int64
@@ -18,6 +22,7 @@ const (
 	NULL
 	RETURN_VALUE
 	ERROR
+	FUNCTION
 )
 
 func (typ Type) String() string {
@@ -32,6 +37,8 @@ func (typ Type) String() string {
 		return "RETURN_VALUE"
 	case ERROR:
 		return "ERROR"
+	case FUNCTION:
+		return "FUNCTION"
 	}
 	return "UNKNOWN"
 }
@@ -93,4 +100,29 @@ func (e *Error) Type() Type {
 
 func (e *Error) Inspect() string {
 	return fmt.Sprintf("ERROR: %s", e.Message)
+}
+
+type Function struct {
+	Parameters []*ast.Identifier
+	Body       *ast.BlockStatement
+	Env        *Environment
+}
+
+func (f *Function) Type() Type {
+	return FUNCTION
+}
+
+func (f *Function) Inspect() string {
+	var out bytes.Buffer
+	params := make([]string, 0)
+	for _, p := range f.Parameters {
+		params = append(params, p.String())
+	}
+	out.WriteString("fn")
+	out.WriteString("(")
+	out.WriteString(strings.Join(params, ", "))
+	out.WriteString(") {\n")
+	out.WriteString(f.Body.String())
+	out.WriteString("\n}")
+	return out.String()
 }
