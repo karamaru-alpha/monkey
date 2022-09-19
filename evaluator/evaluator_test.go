@@ -63,3 +63,23 @@ func TestEval_BangOperator(t *testing.T) {
 		assert.Equal(t, tt.expected, obj.(*object.Boolean).Value)
 	}
 }
+
+func TestEval_InfixExpression(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected int64
+	}{
+		{"1+2", 3},
+		{"2*3", 6},
+		{"4/2", 2},
+		{"4-2", 2},
+	}
+
+	for _, tt := range tests {
+		l := lexer.New(tt.input)
+		p := parser.New(l)
+		program := p.ParseProgram()
+		obj := Eval(program)
+		assert.Equal(t, tt.expected, obj.(*object.Integer).Value)
+	}
+}
