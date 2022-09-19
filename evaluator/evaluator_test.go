@@ -45,3 +45,21 @@ func TestEval_BooleanExpression(t *testing.T) {
 		assert.Equal(t, tt.expected, obj.(*object.Boolean).Value)
 	}
 }
+
+func TestEval_BangOperator(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected bool
+	}{
+		{"!true", false},
+		{"!false", true},
+	}
+
+	for _, tt := range tests {
+		l := lexer.New(tt.input)
+		p := parser.New(l)
+		program := p.ParseProgram()
+		obj := Eval(program)
+		assert.Equal(t, tt.expected, obj.(*object.Boolean).Value)
+	}
+}
