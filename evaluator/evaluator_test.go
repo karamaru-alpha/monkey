@@ -23,7 +23,8 @@ func TestEval_IntegerExpression(t *testing.T) {
 		l := lexer.New(tt.input)
 		p := parser.New(l)
 		program := p.ParseProgram()
-		obj := Eval(program)
+		env := object.NewEnvironment()
+		obj := Eval(program, env)
 		assert.Equal(t, tt.expected, obj.(*object.Integer).Value)
 	}
 }
@@ -47,7 +48,8 @@ func TestEval_BooleanExpression(t *testing.T) {
 		l := lexer.New(tt.input)
 		p := parser.New(l)
 		program := p.ParseProgram()
-		obj := Eval(program)
+		env := object.NewEnvironment()
+		obj := Eval(program, env)
 		assert.Equal(t, tt.expected, obj.(*object.Boolean).Value)
 	}
 }
@@ -65,7 +67,8 @@ func TestEval_BangOperator(t *testing.T) {
 		l := lexer.New(tt.input)
 		p := parser.New(l)
 		program := p.ParseProgram()
-		obj := Eval(program)
+		env := object.NewEnvironment()
+		obj := Eval(program, env)
 		assert.Equal(t, tt.expected, obj.(*object.Boolean).Value)
 	}
 }
@@ -83,7 +86,8 @@ func TestEval_MinusOperator(t *testing.T) {
 		l := lexer.New(tt.input)
 		p := parser.New(l)
 		program := p.ParseProgram()
-		obj := Eval(program)
+		env := object.NewEnvironment()
+		obj := Eval(program, env)
 		assert.Equal(t, tt.expected, obj.(*object.Integer).Value)
 	}
 }
@@ -103,7 +107,8 @@ func TestEval_InfixExpression(t *testing.T) {
 		l := lexer.New(tt.input)
 		p := parser.New(l)
 		program := p.ParseProgram()
-		obj := Eval(program)
+		env := object.NewEnvironment()
+		obj := Eval(program, env)
 		assert.Equal(t, tt.expected, obj.(*object.Integer).Value)
 	}
 }
@@ -123,7 +128,8 @@ func TestEval_IfExpression(t *testing.T) {
 		l := lexer.New(tt.input)
 		p := parser.New(l)
 		program := p.ParseProgram()
-		obj := Eval(program)
+		env := object.NewEnvironment()
+		obj := Eval(program, env)
 		assert.Equal(t, tt.expected, obj.(*object.Integer).Value)
 	}
 }
@@ -142,7 +148,8 @@ func TestEval_ReturnStatement(t *testing.T) {
 		l := lexer.New(tt.input)
 		p := parser.New(l)
 		program := p.ParseProgram()
-		obj := Eval(program)
+		env := object.NewEnvironment()
+		obj := Eval(program, env)
 		assert.Equal(t, tt.expected, obj.(*object.Integer).Value)
 	}
 }
@@ -162,7 +169,27 @@ func TestEval_Error(t *testing.T) {
 		l := lexer.New(tt.input)
 		p := parser.New(l)
 		program := p.ParseProgram()
-		obj := Eval(program)
+		env := object.NewEnvironment()
+		obj := Eval(program, env)
 		assert.Equal(t, tt.expected, obj.(*object.Error).Message)
+	}
+}
+
+func TestEval_LetStatement(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected int64
+	}{
+		{"let a = 1; a;", 1},
+		{"let a = 2 * 3; a;", 6},
+	}
+
+	for _, tt := range tests {
+		l := lexer.New(tt.input)
+		p := parser.New(l)
+		program := p.ParseProgram()
+		env := object.NewEnvironment()
+		obj := Eval(program, env)
+		assert.Equal(t, tt.expected, obj.(*object.Integer).Value)
 	}
 }

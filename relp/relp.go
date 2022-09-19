@@ -7,11 +7,13 @@ import (
 
 	"github.com/karamaru-alpha/monkey/evaluator"
 	"github.com/karamaru-alpha/monkey/lexer"
+	"github.com/karamaru-alpha/monkey/object"
 	"github.com/karamaru-alpha/monkey/parser"
 )
 
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
+	environment := object.NewEnvironment()
 
 	for {
 		fmt.Print(">> ")
@@ -35,7 +37,7 @@ func Start(in io.Reader, out io.Writer) {
 			}
 			return
 		}
-		evaluated := evaluator.Eval(program)
+		evaluated := evaluator.Eval(program, environment)
 		if evaluated != nil {
 			io.WriteString(out, evaluated.Inspect())
 			io.WriteString(out, "\n")
