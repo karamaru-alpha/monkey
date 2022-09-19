@@ -220,6 +220,7 @@ func TestEval_ArrayStatement(t *testing.T) {
 	}{
 		{"let arr = [1, 2]; arr[0];", 1},
 		{"let arr = [1, 2]; arr[1];", 2},
+		{"let arr = [1, 2]; len(arr);", 2},
 	}
 
 	for _, tt := range tests {

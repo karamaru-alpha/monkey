@@ -132,11 +132,15 @@ func toBooleanObject(input bool) object.Object {
 }
 
 func evalIdentifier(ident *ast.Identifier, env *object.Environment) object.Object {
-	val, ok := env.Get(ident.Value)
-	if !ok {
-		return newError("identifier not found: %s", ident.Value)
+	builtin, ok := builtins[ident.Value]
+	if ok {
+		return builtin
 	}
-	return val
+	val, ok := env.Get(ident.Value)
+	if ok {
+		return val
+	}
+	return newError("identifier not found: %s", ident.Value)
 }
 
 func evalPrefixExpression(operator string, right object.Object) object.Object {
@@ -237,14 +241,15 @@ func evalExpressions(exps []ast.Expression, env *object.Environment) []object.Ob
 }
 
 func applyFunction(fn object.Object, args []object.Object) object.Object {
-	function, ok := fn.(*object.Function)
-	if !ok {
-		return newError("not a function: %s", fn.Type())
+	switch fn := fn.(type) {
+	case *object.Builtin:
+		return fn.Fn(args...)
+	case *object.Function:
+		extendedEnv := extendFunctionEnv(fn, args)
+		evaluated := Eval(fn.Body, extendedEnv)
+		return unwrapReturnValue(evaluated)
 	}
-
-	extendedEnv := extendFunctionEnv(function, args)
-	evaluated := Eval(function.Body, extendedEnv)
-	return unwrapReturnValue(evaluated)
+	return newError("not a function: %s", fn.Type())
 
 }
 

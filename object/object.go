@@ -24,6 +24,7 @@ const (
 	ERROR
 	FUNCTION
 	ARRAY
+	BUILTIN
 )
 
 func (typ Type) String() string {
@@ -148,4 +149,18 @@ func (a *Array) Inspect() string {
 	out.WriteString(strings.Join(elements, ", "))
 	out.WriteString("]")
 	return out.String()
+}
+
+type BuiltinFunction func(args ...Object) Object
+
+type Builtin struct {
+	Fn BuiltinFunction
+}
+
+func (b *Builtin) Type() Type {
+	return BUILTIN
+}
+
+func (b *Builtin) Inspect() string {
+	return "builtin function"
 }
