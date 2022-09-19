@@ -107,3 +107,23 @@ func TestEval_InfixExpression(t *testing.T) {
 		assert.Equal(t, tt.expected, obj.(*object.Integer).Value)
 	}
 }
+
+func TestEval_IfExpression(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected int64
+	}{
+		{"if (true) {1} else {2}", 1},
+		{"if (false) {1} else {2}", 2},
+		{"if (1 > 2) {1} else {2}", 2},
+		{"if (1 < 2) {1} else {2}", 1},
+	}
+
+	for _, tt := range tests {
+		l := lexer.New(tt.input)
+		p := parser.New(l)
+		program := p.ParseProgram()
+		obj := Eval(program)
+		assert.Equal(t, tt.expected, obj.(*object.Integer).Value)
+	}
+}
