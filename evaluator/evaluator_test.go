@@ -64,6 +64,24 @@ func TestEval_BangOperator(t *testing.T) {
 	}
 }
 
+func TestEval_MinusOperator(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected int64
+	}{
+		{"-1", -1},
+		{"-5", -5},
+	}
+
+	for _, tt := range tests {
+		l := lexer.New(tt.input)
+		p := parser.New(l)
+		program := p.ParseProgram()
+		obj := Eval(program)
+		assert.Equal(t, tt.expected, obj.(*object.Integer).Value)
+	}
+}
+
 func TestEval_InfixExpression(t *testing.T) {
 	tests := []struct {
 		input    string
