@@ -146,3 +146,23 @@ func TestEval_ReturnStatement(t *testing.T) {
 		assert.Equal(t, tt.expected, obj.(*object.Integer).Value)
 	}
 }
+
+func TestEval_Error(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected string
+	}{
+		{"5 + true;", "type mismatch: INTEGER + BOOLEAN"},
+		{"true + false;", "unknown operator: BOOLEAN + BOOLEAN"},
+		{"-true;", "unknown operator: -BOOLEAN"},
+		{"if (true) {true+false}", "unknown operator: BOOLEAN + BOOLEAN"},
+	}
+
+	for _, tt := range tests {
+		l := lexer.New(tt.input)
+		p := parser.New(l)
+		program := p.ParseProgram()
+		obj := Eval(program)
+		assert.Equal(t, tt.expected, obj.(*object.Error).Message)
+	}
+}
