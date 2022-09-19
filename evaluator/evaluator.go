@@ -20,10 +20,7 @@ func Eval(node ast.Node) object.Object {
 	case *ast.IntegerLiteral:
 		return &object.Integer{Value: node.Value}
 	case *ast.Boolean:
-		if node.Value {
-			return TRUE
-		}
-		return FALSE
+		return toBooleanObject(node.Value)
 	case *ast.PrefixExpression:
 		right := Eval(node.Right)
 		return evalPrefixExpression(node.Operator, right)
@@ -41,6 +38,13 @@ func evalStatements(stmts []ast.Statement) object.Object {
 		result = Eval(stmt)
 	}
 	return result
+}
+
+func toBooleanObject(input bool) object.Object {
+	if input {
+		return TRUE
+	}
+	return FALSE
 }
 
 func evalPrefixExpression(operator string, right object.Object) object.Object {
@@ -72,6 +76,19 @@ func evalMinusOperatorExpression(right object.Object) object.Object {
 }
 
 func evalInfixExpression(operator string, left, right object.Object) object.Object {
+	if left.Type() == object.INTEGER && right.Type() == object.INTEGER {
+		return evalIntegerInfixExpression(operator, left, right)
+	}
+	if operator == "==" {
+		return toBooleanObject(left == right)
+	}
+	if operator == "!=" {
+		return toBooleanObject(left != right)
+	}
+	return NULL
+}
+
+func evalIntegerInfixExpression(operator string, left, right object.Object) object.Object {
 	leftVal := left.(*object.Integer).Value
 	rightVal := right.(*object.Integer).Value
 	switch operator {
