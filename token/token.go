@@ -23,11 +23,13 @@ const (
 	LT
 	GT
 	COMMA
-	SEMICOLUN
+	SEMICOLON
 	LPAREN
 	RPAREN
 	LBRACE
 	RBRACE
+	LBRACKET
+	RBRACKET
 	FUNCTION
 	LET
 	TRUE
@@ -67,8 +69,8 @@ func (typ Type) String() string {
 		return "GT"
 	case COMMA:
 		return "COMMA"
-	case SEMICOLUN:
-		return "SEMICOLUN"
+	case SEMICOLON:
+		return "SEMICOLON"
 	case LPAREN:
 		return "LPAREN"
 	case RPAREN:
@@ -77,6 +79,10 @@ func (typ Type) String() string {
 		return "LBRACE"
 	case RBRACE:
 		return "RBRACE"
+	case LBRACKET:
+		return "LBRACKET"
+	case RBRACKET:
+		return "RBRACKET"
 	case FUNCTION:
 		return "FUNCTION"
 	case LET:

@@ -212,3 +212,22 @@ func TestEval_FunctionStatement(t *testing.T) {
 		assert.Equal(t, tt.expected, obj.(*object.Integer).Value)
 	}
 }
+
+func TestEval_ArrayStatement(t *testing.T) {
+	tests := []struct {
+		input    string
+		expected int64
+	}{
+		{"let arr = [1, 2]; arr[0];", 1},
+		{"let arr = [1, 2]; arr[1];", 2},
+	}
+
+	for _, tt := range tests {
+		l := lexer.New(tt.input)
+		p := parser.New(l)
+		program := p.ParseProgram()
+		env := object.NewEnvironment()
+		obj := Eval(program, env)
+		assert.Equal(t, tt.expected, obj.(*object.Integer).Value)
+	}
+}

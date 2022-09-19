@@ -44,11 +44,15 @@ func (l *Lexer) NextToken() token.Token {
 			return token.New(token.BANG, l.ch)
 		}
 	case ';':
-		return token.New(token.SEMICOLUN, l.ch)
+		return token.New(token.SEMICOLON, l.ch)
 	case '(':
 		return token.New(token.LPAREN, l.ch)
 	case ')':
 		return token.New(token.RPAREN, l.ch)
+	case '[':
+		return token.New(token.LBRACKET, l.ch)
+	case ']':
+		return token.New(token.RBRACKET, l.ch)
 	case ',':
 		return token.New(token.COMMA, l.ch)
 	case '+':
