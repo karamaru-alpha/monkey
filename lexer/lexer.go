@@ -71,6 +71,11 @@ func (l *Lexer) NextToken() token.Token {
 		return token.New(token.LBRACE, l.ch)
 	case '}':
 		return token.New(token.RBRACE, l.ch)
+	case '"':
+		var tok token.Token
+		tok.Type = token.STRING
+		tok.Literal = l.readString()
+		return tok
 	case 0:
 		return token.Token{Type: token.EOF, Literal: ""}
 	default:
@@ -110,8 +115,15 @@ func (l *Lexer) readIdentifier() string {
 	return l.input[position:l.readPosition]
 }
 
-func isLetter(ch byte) bool {
-	return ch >= 'a' && ch <= 'z' || ch >= 'A' && ch <= 'Z' || ch == '_'
+func (l *Lexer) readString() string {
+	position := l.position + 1
+	for {
+		l.readChar()
+		if l.ch == '"' || l.ch == 0 {
+			break
+		}
+	}
+	return l.input[position:l.position]
 }
 
 func (l *Lexer) readNumber() string {
@@ -120,6 +132,10 @@ func (l *Lexer) readNumber() string {
 		l.readChar()
 	}
 	return l.input[position:l.readPosition]
+}
+
+func isLetter(ch byte) bool {
+	return ch >= 'a' && ch <= 'z' || ch >= 'A' && ch <= 'Z' || ch == '_'
 }
 
 func isDigit(ch byte) bool {

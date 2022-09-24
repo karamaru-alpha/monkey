@@ -12,6 +12,7 @@ const (
 	EOF
 	IDENT
 	INT
+	STRING
 	ASSIGN
 	PLUS
 	MINUS
@@ -47,6 +48,8 @@ func (typ Type) String() string {
 		return "IDENT"
 	case INT:
 		return "INT"
+	case STRING:
+		return "STRING"
 	case ASSIGN:
 		return "ASSIGN"
 	case PLUS:

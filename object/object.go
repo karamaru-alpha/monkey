@@ -18,6 +18,7 @@ type Object interface {
 
 const (
 	INTEGER Type = iota + 1
+	STRING
 	BOOLEAN
 	NULL
 	RETURN_VALUE
@@ -31,6 +32,8 @@ func (typ Type) String() string {
 	switch typ {
 	case INTEGER:
 		return "INTEGER"
+	case STRING:
+		return "STRING"
 	case BOOLEAN:
 		return "BOOLEAN"
 	case NULL:
@@ -57,7 +60,18 @@ func (i *Integer) Type() Type {
 
 func (i *Integer) Inspect() string {
 	return strconv.FormatInt(i.Value, 10)
+}
 
+type String struct {
+	Value string
+}
+
+func (s *String) Type() Type {
+	return STRING
+}
+
+func (s *String) Inspect() string {
+	return s.Value
 }
 
 type Boolean struct {

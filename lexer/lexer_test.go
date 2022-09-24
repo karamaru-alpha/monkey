@@ -29,6 +29,7 @@ if (5 < 10) {
 
 !-/*
 [1, 2];
+let a = "hoge";
 `
 	expected := []token.Token{
 		{Type: token.LET, Literal: "let"},
@@ -101,6 +102,11 @@ if (5 < 10) {
 		{Type: token.COMMA, Literal: ","},
 		{Type: token.INT, Literal: "2"},
 		{Type: token.RBRACKET, Literal: "]"},
+		{Type: token.SEMICOLON, Literal: ";"},
+		{Type: token.LET, Literal: "let"},
+		{Type: token.IDENT, Literal: "a"},
+		{Type: token.ASSIGN, Literal: "="},
+		{Type: token.STRING, Literal: "hoge"},
 		{Type: token.SEMICOLON, Literal: ";"},
 		{Type: token.EOF, Literal: ""},
 	}
