@@ -131,17 +131,17 @@ type ReturnStatement struct {
 	ReturnValue Expression
 }
 
-func (rs *ReturnStatement) statementNode() {}
+func (r *ReturnStatement) statementNode() {}
 
-func (rs *ReturnStatement) TokenLiteral() string {
-	return rs.Token.Literal
+func (r *ReturnStatement) TokenLiteral() string {
+	return r.Token.Literal
 }
 
-func (rs *ReturnStatement) String() string {
+func (r *ReturnStatement) String() string {
 	var out bytes.Buffer
-	out.WriteString(rs.TokenLiteral() + " ")
-	if rs.ReturnValue != nil {
-		out.WriteString(rs.ReturnValue.String())
+	out.WriteString(r.TokenLiteral() + " ")
+	if r.ReturnValue != nil {
+		out.WriteString(r.ReturnValue.String())
 	}
 	out.WriteString(";")
 	return out.String()
@@ -240,15 +240,15 @@ type BlockStatement struct {
 	Statements []Statement
 }
 
-func (bs *BlockStatement) statementNode() {}
+func (b *BlockStatement) statementNode() {}
 
-func (bs *BlockStatement) TokenLiteral() string {
-	return bs.Token.Literal
+func (b *BlockStatement) TokenLiteral() string {
+	return b.Token.Literal
 }
 
-func (bs *BlockStatement) String() string {
+func (b *BlockStatement) String() string {
 	var out bytes.Buffer
-	for _, s := range bs.Statements {
+	for _, s := range b.Statements {
 		out.WriteString(s.String())
 	}
 	return out.String()
@@ -286,19 +286,19 @@ type CallExpression struct {
 	Arguments []Expression
 }
 
-func (ce *CallExpression) expressionNode() {}
+func (c *CallExpression) expressionNode() {}
 
-func (ce *CallExpression) TokenLiteral() string {
-	return ce.Token.Literal
+func (c *CallExpression) TokenLiteral() string {
+	return c.Token.Literal
 }
 
-func (ce *CallExpression) String() string {
+func (c *CallExpression) String() string {
 	var out bytes.Buffer
 	args := make([]string, 0)
-	for _, arg := range ce.Arguments {
+	for _, arg := range c.Arguments {
 		args = append(args, arg.String())
 	}
-	out.WriteString(ce.Function.String())
+	out.WriteString(c.Function.String())
 	out.WriteString("(")
 	out.WriteString(strings.Join(args, ", "))
 	out.WriteString(")")
