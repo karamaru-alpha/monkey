@@ -6,7 +6,7 @@ Go言語でつくるインタプリタ
 - 条件分岐
 - 配列
 - ハッシュ
-- builtin(len)
+- builtin(len, puts)
 
 ```
 $ go run main.go
@@ -31,12 +31,16 @@ $ go run main.go
 > let arr = [1, 2];
 > arr[0]
 // 1
-> len(arr)
-// 2
 
 >> let hash = {"key": "value"};
 >> hash["key"];
 // "value"
+
+> len(arr)
+// 2
+> puts(arr)
+// [1, 2]
+// null
 
 >> exit
 // bye!
