@@ -5,6 +5,7 @@ Go言語でつくるインタプリタ
 - 関数呼び出し
 - 条件分岐
 - 配列
+- ハッシュ
 - builtin(len)
 
 ```
@@ -13,10 +14,10 @@ $ go run main.go
 > let a = 1;
 > a;
 // 1
-
-> let b = 2;
-> a + b;
+> a + 2;
 // 3
+> "hello" + "world!";
+// helloworld!
 
 > let multiple = fn(a, b){ return a * b; };
 > multiple(10, 2)
@@ -30,7 +31,13 @@ $ go run main.go
 > let arr = [1, 2];
 > arr[0]
 // 1
-
 > len(arr)
 // 2
+
+>> let hash = {"key": "value"};
+>> hash["key"];
+// "value"
+
+>> exit
+// bye!
 ```

@@ -3,6 +3,7 @@ package object
 import (
 	"bytes"
 	"fmt"
+	"hash/fnv"
 	"strconv"
 	"strings"
 
@@ -16,6 +17,10 @@ type Object interface {
 	Inspect() string
 }
 
+type Hashable interface {
+	HashKey() HashKey
+}
+
 const (
 	INTEGER Type = iota + 1
 	STRING
@@ -25,6 +30,7 @@ const (
 	ERROR
 	FUNCTION
 	ARRAY
+	HASH
 	BUILTIN
 )
 
@@ -46,6 +52,8 @@ func (typ Type) String() string {
 		return "FUNCTION"
 	case ARRAY:
 		return "ARRAY"
+	case HASH:
+		return "HASH"
 	}
 	return "UNKNOWN"
 }
@@ -62,6 +70,10 @@ func (i *Integer) Inspect() string {
 	return strconv.FormatInt(i.Value, 10)
 }
 
+func (i *Integer) HashKey() HashKey {
+	return HashKey{Type: INTEGER, Value: uint64(i.Value)}
+}
+
 type String struct {
 	Value string
 }
@@ -74,6 +86,12 @@ func (s *String) Inspect() string {
 	return s.Value
 }
 
+func (s *String) HashKey() HashKey {
+	h := fnv.New64a()
+	h.Write([]byte(s.Value))
+	return HashKey{Type: STRING, Value: h.Sum64()}
+}
+
 type Boolean struct {
 	Value bool
 }
@@ -84,6 +102,16 @@ func (b *Boolean) Type() Type {
 
 func (b *Boolean) Inspect() string {
 	return fmt.Sprintf("%t", b.Value)
+}
+
+func (b *Boolean) HashKey() HashKey {
+	hashKey := HashKey{Type: BOOLEAN}
+	if b.Value {
+		hashKey.Value = 1
+	} else {
+		hashKey.Value = 0
+	}
+	return hashKey
 }
 
 type Null struct{}
@@ -162,6 +190,36 @@ func (a *Array) Inspect() string {
 	out.WriteString("[")
 	out.WriteString(strings.Join(elements, ", "))
 	out.WriteString("]")
+	return out.String()
+}
+
+type HashKey struct {
+	Type  Type
+	Value uint64
+}
+
+type HashPair struct {
+	Key   Object
+	Value Object
+}
+
+type Hash struct {
+	Pairs map[HashKey]HashPair
+}
+
+func (h *Hash) Type() Type {
+	return HASH
+}
+
+func (h *Hash) Inspect() string {
+	var out bytes.Buffer
+	pairs := make([]string, 0, len(h.Pairs))
+	for _, pair := range h.Pairs {
+		pairs = append(pairs, fmt.Sprintf("%s:%s", pair.Key.Inspect(), pair.Value.Inspect()))
+	}
+	out.WriteString("{")
+	out.WriteString(strings.Join(pairs, ", "))
+	out.WriteString("}")
 	return out.String()
 }
 

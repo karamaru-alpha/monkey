@@ -2,6 +2,7 @@ package ast
 
 import (
 	"bytes"
+	"fmt"
 	"strings"
 
 	"github.com/karamaru-alpha/monkey/token"
@@ -324,6 +325,29 @@ func (a *ArrayLiteral) String() string {
 	out.WriteString("[")
 	out.WriteString(strings.Join(elements, ", "))
 	out.WriteString("]")
+	return out.String()
+}
+
+type HashLiteral struct {
+	Token token.Token
+	Pairs map[Expression]Expression
+}
+
+func (h *HashLiteral) expressionNode() {}
+
+func (h *HashLiteral) TokenLiteral() string {
+	return h.Token.Literal
+}
+
+func (h *HashLiteral) String() string {
+	var out bytes.Buffer
+	pairs := make([]string, 0, len(h.Pairs))
+	for key, val := range h.Pairs {
+		pairs = append(pairs, fmt.Sprintf("%s:%s", key.String(), val.String()))
+	}
+	out.WriteString("{")
+	out.WriteString(strings.Join(pairs, ", "))
+	out.WriteString("}")
 	return out.String()
 }
 

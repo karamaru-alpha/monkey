@@ -24,6 +24,7 @@ const (
 	LT
 	GT
 	COMMA
+	COLON
 	SEMICOLON
 	LPAREN
 	RPAREN
@@ -72,6 +73,8 @@ func (typ Type) String() string {
 		return "GT"
 	case COMMA:
 		return "COMMA"
+	case COLON:
+		return "COLON"
 	case SEMICOLON:
 		return "SEMICOLON"
 	case LPAREN:

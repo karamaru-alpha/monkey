@@ -43,6 +43,8 @@ func (l *Lexer) NextToken() token.Token {
 		} else {
 			return token.New(token.BANG, l.ch)
 		}
+	case ':':
+		return token.New(token.COLON, l.ch)
 	case ';':
 		return token.New(token.SEMICOLON, l.ch)
 	case '(':

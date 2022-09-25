@@ -83,6 +83,8 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 			array.Elements = append(array.Elements, val)
 		}
 		return array
+	case *ast.HashLiteral:
+		return evalHashLiteral(node, env)
 	case *ast.IndexExpression:
 		left := Eval(node.Left, env)
 		if isError(left) {
@@ -92,7 +94,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		if isError(index) {
 			return index
 		}
-		return left.(*object.Array).Elements[index.(*object.Integer).Value]
+		return evalIndexExpression(left, index)
 	}
 	return nil
 }
@@ -240,6 +242,44 @@ func evalIfExpression(exp *ast.IfExpression, env *object.Environment) object.Obj
 		return Eval(exp.Alternative, env)
 	}
 	return NULL
+}
+
+func evalIndexExpression(left, index object.Object) object.Object {
+	switch left := left.(type) {
+	case *object.Array:
+		return left.Elements[index.(*object.Integer).Value]
+	case *object.Hash:
+		hashKey, ok := index.(object.Hashable)
+		if !ok {
+			return newError("unhashable type %s", index.Type())
+		}
+		pair, ok := left.Pairs[hashKey.HashKey()]
+		if !ok {
+			return NULL
+		}
+		return pair.Value
+	}
+	return newError("invalid index expression. %s[%s]", left.Type(), index.Type())
+}
+
+func evalHashLiteral(node *ast.HashLiteral, env *object.Environment) object.Object {
+	pairs := make(map[object.HashKey]object.HashPair)
+	for k, v := range node.Pairs {
+		key := Eval(k, env)
+		if isError(key) {
+			return key
+		}
+		val := Eval(v, env)
+		if isError(val) {
+			return val
+		}
+		hashkey, ok := key.(object.Hashable)
+		if !ok {
+			return newError("unhashable type %s", key.Type())
+		}
+		pairs[hashkey.HashKey()] = object.HashPair{Key: key, Value: val}
+	}
+	return &object.Hash{Pairs: pairs}
 }
 
 func evalExpressions(exps []ast.Expression, env *object.Environment) []object.Object {

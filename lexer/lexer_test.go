@@ -28,8 +28,7 @@ if (5 < 10) {
 10 != 9;
 
 !-/*
-[1, 2];
-let a = "hoge";
+[1, 2, "hoge", {"key": "val"}];
 `
 	expected := []token.Token{
 		{Type: token.LET, Literal: "let"},
@@ -101,12 +100,15 @@ let a = "hoge";
 		{Type: token.INT, Literal: "1"},
 		{Type: token.COMMA, Literal: ","},
 		{Type: token.INT, Literal: "2"},
-		{Type: token.RBRACKET, Literal: "]"},
-		{Type: token.SEMICOLON, Literal: ";"},
-		{Type: token.LET, Literal: "let"},
-		{Type: token.IDENT, Literal: "a"},
-		{Type: token.ASSIGN, Literal: "="},
+		{Type: token.COMMA, Literal: ","},
 		{Type: token.STRING, Literal: "hoge"},
+		{Type: token.COMMA, Literal: ","},
+		{Type: token.LBRACE, Literal: "{"},
+		{Type: token.STRING, Literal: "key"},
+		{Type: token.COLON, Literal: ":"},
+		{Type: token.STRING, Literal: "val"},
+		{Type: token.RBRACE, Literal: "}"},
+		{Type: token.RBRACKET, Literal: "]"},
 		{Type: token.SEMICOLON, Literal: ";"},
 		{Type: token.EOF, Literal: ""},
 	}
