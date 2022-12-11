@@ -5,33 +5,29 @@ import (
 	"fmt"
 	"io"
 
-	"github.com/karamaru-alpha/monkey/evaluator"
+	"github.com/karamaru-alpha/monkey/compiler"
 	"github.com/karamaru-alpha/monkey/lexer"
-	"github.com/karamaru-alpha/monkey/object"
 	"github.com/karamaru-alpha/monkey/parser"
+	"github.com/karamaru-alpha/monkey/vm"
 )
 
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
-	environment := object.NewEnvironment()
 
-	fmt.Println("interpreter in go console...")
+	fmt.Println("console...")
 	for {
-
 		fmt.Print(">> ")
 		scanned := scanner.Scan()
 		if !scanned {
 			return
 		}
 
-		line := scanner.Text()
-		if line == "exit" {
+		input := scanner.Text()
+		if input == "exit" {
 			fmt.Println("bye!")
 			return
 		}
-		l := lexer.New(line)
-		p := parser.New(l)
-
+		p := parser.New(lexer.New(input))
 		program := p.ParseProgram()
 		if len(p.Errors()) > 0 {
 			for _, msg := range p.Errors() {
@@ -39,10 +35,32 @@ func Start(in io.Reader, out io.Writer) {
 			}
 			return
 		}
-		evaluated := evaluator.Eval(program, environment)
-		if evaluated != nil {
-			io.WriteString(out, evaluated.Inspect())
-			io.WriteString(out, "\n")
+
+		// Compiler
+
+		comp := compiler.New()
+		if err := comp.Compile(program); err != nil {
+			fmt.Fprintf(out, "compile failed: \n %s\n", err)
+			continue
 		}
+
+		machine := vm.New(comp.Bytecode())
+		if err := machine.Run(); err != nil {
+			fmt.Fprintf(out, "executing bytecode failed: \n %s\n", err)
+			continue
+		}
+
+		stackTop := machine.StackTop()
+		io.WriteString(out, stackTop.Inspect())
+		io.WriteString(out, "\n")
+
+		// Interpreter
+
+		//environment := object.NewEnvironment()
+		//evaluated := evaluator.Eval(program, environment)
+		//if evaluated != nil {
+		//	io.WriteString(out, evaluated.Inspect())
+		//	io.WriteString(out, "\n")
+		//}
 	}
 }
