@@ -11,7 +11,7 @@ import (
 	"github.com/karamaru-alpha/monkey/parser"
 )
 
-func TestVM_IntegerArithmetic(t *testing.T) {
+func TestVM(t *testing.T) {
 	for _, tt := range []struct {
 		input    string
 		expected interface{}
@@ -19,6 +19,18 @@ func TestVM_IntegerArithmetic(t *testing.T) {
 		{"1", 1},
 		{"2", 2},
 		{"1 + 2", 3},
+		{"2 - 1", 1},
+		{"4 / 2", 2},
+		{"2 * 2", 4},
+		{"true", true},
+		{"false", false},
+		{"1 == 1", true},
+		{"1 != 1", false},
+		{"2 > 1", true},
+		{"2 < 1", false},
+		{"true == true", true},
+		{"!true", false},
+		{"-1", -1},
 	} {
 		program := parser.New(lexer.New(tt.input)).ParseProgram()
 
@@ -28,10 +40,10 @@ func TestVM_IntegerArithmetic(t *testing.T) {
 		vm := New(c.Bytecode())
 		assert.NoError(t, vm.Run())
 
-		stackElm := vm.StackTop()
+		stackElem := vm.LastPoppedStackElem()
 		switch expected := tt.expected.(type) {
 		case int:
-			assert.Equal(t, int64(expected), stackElm.(*object.Integer).Value)
+			assert.Equal(t, int64(expected), stackElem.(*object.Integer).Value)
 		}
 	}
 }
