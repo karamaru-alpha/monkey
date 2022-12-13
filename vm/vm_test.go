@@ -31,6 +31,9 @@ func TestVM(t *testing.T) {
 		{"true == true", true},
 		{"!true", false},
 		{"-1", -1},
+		{"if (true) {1}", 1},
+		{"if (false) {1} else {2}", 2},
+		{"if (false) {1}", Null},
 	} {
 		program := parser.New(lexer.New(tt.input)).ParseProgram()
 
