@@ -206,6 +206,30 @@ func TestCompiler_Compile(t *testing.T) {
 				},
 			},
 		},
+		{
+			input: "let one = 1; let two = 2;",
+			expected: expected{
+				constants: []interface{}{1, 2},
+				instructions: []code.Instructions{
+					code.Make(code.OpConstant, 0),
+					code.Make(code.OpSetGlobal, 0),
+					code.Make(code.OpConstant, 1),
+					code.Make(code.OpSetGlobal, 1),
+				},
+			},
+		},
+		//{
+		//	input: "let one = 1; one;",
+		//	expected: expected{
+		//		constants: []interface{}{1},
+		//		instructions: []code.Instructions{
+		//			code.Make(code.OpConstant, 0),
+		//			code.Make(code.OpSetGlobal, 0),
+		//			code.Make(code.OpGetGlobal, 0),
+		//			code.Make(code.OpPop),
+		//		},
+		//	},
+		//},
 	} {
 		program := parser.New(lexer.New(tt.input)).ParseProgram()
 

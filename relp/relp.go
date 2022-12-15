@@ -7,12 +7,17 @@ import (
 
 	"github.com/karamaru-alpha/monkey/compiler"
 	"github.com/karamaru-alpha/monkey/lexer"
+	"github.com/karamaru-alpha/monkey/object"
 	"github.com/karamaru-alpha/monkey/parser"
 	"github.com/karamaru-alpha/monkey/vm"
 )
 
 func Start(in io.Reader, out io.Writer) {
 	scanner := bufio.NewScanner(in)
+
+	constants := make([]object.Object, 0)
+	globals := make([]object.Object, vm.GlobalsSize)
+	symbolTable := compiler.NewSymbolTable()
 
 	fmt.Println("console...")
 	for {
@@ -23,6 +28,9 @@ func Start(in io.Reader, out io.Writer) {
 		}
 
 		input := scanner.Text()
+		if input == "" {
+			continue
+		}
 		if input == "exit" {
 			fmt.Println("bye!")
 			return
@@ -38,13 +46,15 @@ func Start(in io.Reader, out io.Writer) {
 
 		// Compiler
 
-		comp := compiler.New()
+		comp := compiler.NewWithState(symbolTable, constants)
 		if err := comp.Compile(program); err != nil {
 			fmt.Fprintf(out, "compile failed: \n %s\n", err)
 			continue
 		}
 
-		machine := vm.New(comp.Bytecode())
+		bytecode := comp.Bytecode()
+		constants = bytecode.Constants
+		machine := vm.NewWithGlobalsStore(bytecode, globals)
 		if err := machine.Run(); err != nil {
 			fmt.Fprintf(out, "executing bytecode failed: \n %s\n", err)
 			continue

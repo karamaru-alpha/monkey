@@ -10,7 +10,10 @@ import (
 	"github.com/karamaru-alpha/monkey/object"
 )
 
-const StackSize = 2048
+const (
+	StackSize   = 2048
+	GlobalsSize = 65536
+)
 
 var (
 	True  = &object.Boolean{Value: true}
@@ -23,6 +26,7 @@ type VM struct {
 	instructions code.Instructions
 	stack        []object.Object
 	sp           int // Always points to the next value. top of stack is stack[sp-1]
+	globals      []object.Object
 }
 
 func New(bytecode *compiler.Bytecode) *VM {
@@ -31,7 +35,14 @@ func New(bytecode *compiler.Bytecode) *VM {
 		instructions: bytecode.Instructions,
 		stack:        make([]object.Object, StackSize),
 		sp:           0,
+		globals:      make([]object.Object, GlobalsSize),
 	}
+}
+
+func NewWithGlobalsStore(bytecode *compiler.Bytecode, s []object.Object) *VM {
+	vm := New(bytecode)
+	vm.globals = s
+	return vm
 }
 
 func (v *VM) StackTop() object.Object {
@@ -94,6 +105,16 @@ func (v *VM) Run() error {
 			condition := v.pop()
 			if !isTruthy(condition) {
 				i = position - 1
+			}
+		case code.OpSetGlobal:
+			globalIndex := int(binary.BigEndian.Uint16(v.instructions[i+1:]))
+			i += 2
+			v.globals[globalIndex] = v.pop()
+		case code.OpGetGlobal:
+			globalIndex := int(binary.BigEndian.Uint16(v.instructions[i+1:]))
+			i += 2
+			if err := v.push(v.globals[globalIndex]); err != nil {
+				return err
 			}
 		case code.OpPop:
 			v.pop()
