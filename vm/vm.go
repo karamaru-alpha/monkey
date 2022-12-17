@@ -124,6 +124,17 @@ func (v *VM) Run() error {
 			if err := v.push(array); err != nil {
 				return err
 			}
+		case code.OpHash:
+			numElements := int(binary.BigEndian.Uint16(v.instructions[i+1:]))
+			i += 2
+
+			hash, err := v.buildHash(v.sp-numElements, v.sp)
+			if err != nil {
+				return err
+			}
+			if err := v.push(hash); err != nil {
+				return err
+			}
 		case code.OpPop:
 			v.pop()
 		}
@@ -243,6 +254,22 @@ func (v *VM) buildArray(startIdx, endIdx int) object.Object {
 		elements[i-startIdx] = v.stack[i]
 	}
 	return &object.Array{Elements: elements}
+}
+
+func (v *VM) buildHash(startIdx, endIdx int) (object.Object, error) {
+	hashedPairs := make(map[object.HashKey]object.HashPair)
+	for i := startIdx; i < endIdx; i += 2 {
+		key := v.stack[i]
+		value := v.stack[i+1]
+		pair := object.HashPair{Key: key, Value: value}
+
+		hashKey, ok := key.(object.Hashable)
+		if !ok {
+			return nil, fmt.Errorf("unusable as hash key: %s", key.Type())
+		}
+		hashedPairs[hashKey.HashKey()] = pair
+	}
+	return &object.Hash{Pairs: hashedPairs}, nil
 }
 
 func isTruthy(obj object.Object) bool {

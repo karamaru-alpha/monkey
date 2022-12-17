@@ -37,6 +37,7 @@ func TestVM(t *testing.T) {
 		{"let a = 1; a", 1},
 		{`"kara"+"maru"`, "karamaru"},
 		{`[1, 2]`, []int{1, 2}},
+		{`{1: 2}`, map[int]int{1: 2}},
 	} {
 		program := parser.New(lexer.New(tt.input)).ParseProgram()
 
@@ -60,6 +61,10 @@ func TestVM(t *testing.T) {
 		case []int:
 			for i, e := range stackElem.(*object.Array).Elements {
 				assert.Equal(t, int64(expected[i]), e.(*object.Integer).Value)
+			}
+		case map[int]int:
+			for _, pair := range stackElem.(*object.Hash).Pairs {
+				assert.Equal(t, expected[int(pair.Key.(*object.Integer).Value)], int(pair.Value.(*object.Integer).Value))
 			}
 		}
 	}

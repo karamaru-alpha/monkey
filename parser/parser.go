@@ -235,8 +235,8 @@ func (p *Parser) parseHashLiteral() ast.Expression {
 		value := p.parseExpression(LOWEST)
 		hash.Pairs[key] = value
 
-		if p.peekToken.Type != token.COMMA && p.peekToken.Type != token.RBRACE {
-			return nil
+		if p.peekToken.Type == token.COMMA {
+			p.nextToken()
 		}
 	}
 	p.nextToken()
