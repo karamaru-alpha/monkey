@@ -135,6 +135,12 @@ func (v *VM) Run() error {
 			if err := v.push(hash); err != nil {
 				return err
 			}
+		case code.OpIndex:
+			index := v.pop()
+			left := v.pop()
+			if err := v.executeIndexExpression(left, index); err != nil {
+				return err
+			}
 		case code.OpPop:
 			v.pop()
 		}
@@ -270,6 +276,45 @@ func (v *VM) buildHash(startIdx, endIdx int) (object.Object, error) {
 		hashedPairs[hashKey.HashKey()] = pair
 	}
 	return &object.Hash{Pairs: hashedPairs}, nil
+}
+
+func (v *VM) executeIndexExpression(left, index object.Object) error {
+	switch {
+	case left.Type() == object.ARRAY && index.Type() == object.INTEGER:
+		if err := v.executeArrayIndex(left, index); err != nil {
+			return err
+		}
+		return nil
+	case left.Type() == object.HASH:
+		if err := v.executeHashIndex(left, index); err != nil {
+			return err
+		}
+		return nil
+	}
+	return fmt.Errorf("invalid index. left: %s, index: %s", left.Type(), index.Type())
+}
+
+func (v *VM) executeArrayIndex(array, index object.Object) error {
+	arrayObject := array.(*object.Array)
+	i := index.(*object.Integer).Value
+	max := int64(len(arrayObject.Elements) - 1)
+	if i < 0 || i > max {
+		return v.push(Null)
+	}
+	return v.push(arrayObject.Elements[i])
+}
+
+func (v *VM) executeHashIndex(array, index object.Object) error {
+	hashObject := array.(*object.Hash)
+	key, ok := index.(object.Hashable)
+	if !ok {
+		return fmt.Errorf("unusable as hash key: %s", index.Type())
+	}
+	pair, ok := hashObject.Pairs[key.HashKey()]
+	if !ok {
+		return v.push(Null)
+	}
+	return v.push(pair.Value)
 }
 
 func isTruthy(obj object.Object) bool {

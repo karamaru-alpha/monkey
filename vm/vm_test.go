@@ -37,7 +37,8 @@ func TestVM(t *testing.T) {
 		{"let a = 1; a", 1},
 		{`"kara"+"maru"`, "karamaru"},
 		{`[1, 2]`, []int{1, 2}},
-		{`{1: 2}`, map[int]int{1: 2}},
+		{`[1, 2][0]`, 1},
+		{`{1: 2}[1]`, 2},
 	} {
 		program := parser.New(lexer.New(tt.input)).ParseProgram()
 

@@ -1,7 +1,6 @@
 package compiler
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -289,6 +288,22 @@ func TestCompiler_Compile(t *testing.T) {
 				},
 			},
 		},
+		{
+			input: "{1: 2, 3: 4}[1]",
+			expected: expected{
+				constants: []interface{}{1, 2, 3, 4, 1},
+				instructions: []code.Instructions{
+					code.Make(code.OpConstant, 0),
+					code.Make(code.OpConstant, 1),
+					code.Make(code.OpConstant, 2),
+					code.Make(code.OpConstant, 3),
+					code.Make(code.OpHash, 4),
+					code.Make(code.OpConstant, 4),
+					code.Make(code.OpIndex),
+					code.Make(code.OpPop),
+				},
+			},
+		},
 	} {
 		program := parser.New(lexer.New(tt.input)).ParseProgram()
 
@@ -296,9 +311,6 @@ func TestCompiler_Compile(t *testing.T) {
 		assert.NoError(t, compiler.Compile(program))
 
 		bytecode := compiler.Bytecode()
-		fmt.Println("==============")
-		fmt.Println(bytecode.Instructions)
-		fmt.Println("==============")
 		assert.Equal(t, concatInstructions(tt.expected.instructions), bytecode.Instructions)
 
 		testConstants(t, tt.expected.constants, bytecode.Constants)
