@@ -304,6 +304,80 @@ func TestCompiler_Compile(t *testing.T) {
 				},
 			},
 		},
+		{
+			input: "fn() { return 5 + 10 }",
+			expected: expected{
+				constants: []interface{}{
+					5,
+					10,
+					[]code.Instructions{
+						code.Make(code.OpConstant, 0),
+						code.Make(code.OpConstant, 1),
+						code.Make(code.OpAdd),
+						code.Make(code.OpReturn),
+					},
+				},
+				instructions: []code.Instructions{
+					code.Make(code.OpConstant, 2),
+					code.Make(code.OpPop),
+				},
+			},
+		},
+		{
+			input: "fn() { 1; 2 }",
+			expected: expected{
+				constants: []interface{}{
+					1,
+					2,
+					[]code.Instructions{
+						code.Make(code.OpConstant, 0),
+						code.Make(code.OpPop),
+						code.Make(code.OpConstant, 1),
+						code.Make(code.OpReturn),
+					},
+				},
+				instructions: []code.Instructions{
+					code.Make(code.OpConstant, 2),
+					code.Make(code.OpPop),
+				},
+			},
+		},
+		{
+			input: "fn() { 1 }()",
+			expected: expected{
+				constants: []interface{}{
+					1,
+					[]code.Instructions{
+						code.Make(code.OpConstant, 0),
+						code.Make(code.OpReturn),
+					},
+				},
+				instructions: []code.Instructions{
+					code.Make(code.OpConstant, 1),
+					code.Make(code.OpCall),
+					code.Make(code.OpPop),
+				},
+			},
+		},
+		{
+			input: "let hoge = fn() { 1 }; hoge()",
+			expected: expected{
+				constants: []interface{}{
+					1,
+					[]code.Instructions{
+						code.Make(code.OpConstant, 0),
+						code.Make(code.OpReturn),
+					},
+				},
+				instructions: []code.Instructions{
+					code.Make(code.OpConstant, 1),
+					code.Make(code.OpSetGlobal, 0),
+					code.Make(code.OpGetGlobal, 0),
+					code.Make(code.OpCall),
+					code.Make(code.OpPop),
+				},
+			},
+		},
 	} {
 		program := parser.New(lexer.New(tt.input)).ParseProgram()
 
@@ -311,9 +385,8 @@ func TestCompiler_Compile(t *testing.T) {
 		assert.NoError(t, compiler.Compile(program))
 
 		bytecode := compiler.Bytecode()
-		assert.Equal(t, concatInstructions(tt.expected.instructions), bytecode.Instructions)
-
 		testConstants(t, tt.expected.constants, bytecode.Constants)
+		assert.Equal(t, concatInstructions(tt.expected.instructions), bytecode.Instructions)
 	}
 }
 

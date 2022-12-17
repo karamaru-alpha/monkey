@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/karamaru-alpha/monkey/ast"
+	"github.com/karamaru-alpha/monkey/code"
 )
 
 type Type int64
@@ -32,6 +33,7 @@ const (
 	ARRAY
 	HASH
 	BUILTIN
+	COMPILED_FUNCTION
 )
 
 func (typ Type) String() string {
@@ -54,6 +56,10 @@ func (typ Type) String() string {
 		return "ARRAY"
 	case HASH:
 		return "HASH"
+	case BUILTIN:
+		return "BUILTIN"
+	case COMPILED_FUNCTION:
+		return "COMPILED_FUNCTION"
 	}
 	return "UNKNOWN"
 }
@@ -235,4 +241,16 @@ func (b *Builtin) Type() Type {
 
 func (b *Builtin) Inspect() string {
 	return "builtin function"
+}
+
+type CompiledFunction struct {
+	Instructions code.Instructions
+}
+
+func (c *CompiledFunction) Type() Type {
+	return COMPILED_FUNCTION
+}
+
+func (c *CompiledFunction) Inspect() string {
+	return fmt.Sprintf("CompoledFunction[%p]", c)
 }

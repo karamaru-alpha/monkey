@@ -39,6 +39,7 @@ func TestVM(t *testing.T) {
 		{`[1, 2]`, []int{1, 2}},
 		{`[1, 2][0]`, 1},
 		{`{1: 2}[1]`, 2},
+		{`let hoge = fn() {1 + 2}; hoge()`, 3},
 	} {
 		program := parser.New(lexer.New(tt.input)).ParseProgram()
 

@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -11,9 +12,7 @@ import (
 )
 
 func TestParser_LetStatement(t *testing.T) {
-	input := `let x = 5;
-let y = 10;
-`
+	input := "let x = 5;"
 	l := lexer.New(input)
 	p := New(l)
 	program := p.ParseProgram()
@@ -26,27 +25,21 @@ let y = 10;
 				Token: token.Token{Type: token.IDENT, Literal: "x"},
 				Value: "x",
 			},
-			Value: nil,
-		},
-		{
-			Token: token.Token{Type: token.LET, Literal: "let"},
-			Name: &ast.Identifier{
-				Token: token.Token{Type: token.IDENT, Literal: "y"},
-				Value: "y",
+			Value: &ast.IntegerLiteral{
+				Token: token.Token{Type: token.INT, Literal: "5"},
+				Value: 5,
 			},
-			Value: nil,
 		},
 	}
 
 	for i, tt := range tests {
-		assert.Equal(t, tt, program.Statements[i].(*ast.LetStatement))
+		fmt.Println()
+		assert.Equal(t, tt.Value, program.Statements[i].(*ast.LetStatement).Value)
 	}
 }
 
 func TestParser_ReturnStatement(t *testing.T) {
-	input := `return 5;
-return add(1, 2);
-`
+	input := "return 5"
 	l := lexer.New(input)
 	p := New(l)
 	program := p.ParseProgram()
@@ -54,12 +47,11 @@ return add(1, 2);
 
 	var tests = []*ast.ReturnStatement{
 		{
-			Token:       token.Token{Type: token.RETURN, Literal: "return"},
-			ReturnValue: nil,
-		},
-		{
-			Token:       token.Token{Type: token.RETURN, Literal: "return"},
-			ReturnValue: nil,
+			Token: token.Token{Type: token.RETURN, Literal: "return"},
+			ReturnValue: &ast.IntegerLiteral{
+				Token: token.Token{Type: token.INT, Literal: "5"},
+				Value: 5,
+			},
 		},
 	}
 
