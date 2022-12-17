@@ -33,9 +33,10 @@ func TestVM(t *testing.T) {
 		{"-1", -1},
 		{"if (true) {1}", 1},
 		{"if (false) {1} else {2}", 2},
-		{"if (false) {1}", Null},
+		{"if (false) {1}", nil},
 		{"let a = 1; a", 1},
 		{`"kara"+"maru"`, "karamaru"},
+		{`[1, 2]`, []int{1, 2}},
 	} {
 		program := parser.New(lexer.New(tt.input)).ParseProgram()
 
@@ -49,6 +50,17 @@ func TestVM(t *testing.T) {
 		switch expected := tt.expected.(type) {
 		case int:
 			assert.Equal(t, int64(expected), stackElem.(*object.Integer).Value)
+		case string:
+			assert.Equal(t, expected, stackElem.(*object.String).Value)
+		case bool:
+			assert.Equal(t, expected, stackElem.(*object.Boolean).Value)
+		case nil:
+			_, ok := stackElem.(*object.Null)
+			assert.True(t, ok)
+		case []int:
+			for i, e := range stackElem.(*object.Array).Elements {
+				assert.Equal(t, int64(expected[i]), e.(*object.Integer).Value)
+			}
 		}
 	}
 }

@@ -84,7 +84,7 @@ func (v *VM) Run() error {
 				return err
 			}
 		case code.OpEqual, code.OpNotEqual, code.OpGreaterThan:
-			if err := v.push(True); err != nil {
+			if err := v.executeComparison(op); err != nil {
 				return err
 			}
 		case code.OpBang:
@@ -114,6 +114,14 @@ func (v *VM) Run() error {
 			globalIndex := int(binary.BigEndian.Uint16(v.instructions[i+1:]))
 			i += 2
 			if err := v.push(v.globals[globalIndex]); err != nil {
+				return err
+			}
+		case code.OpArray:
+			numElements := int(binary.BigEndian.Uint16(v.instructions[i+1:]))
+			i += 2
+
+			array := v.buildArray(v.sp-numElements, v.sp)
+			if err := v.push(array); err != nil {
 				return err
 			}
 		case code.OpPop:
@@ -227,6 +235,14 @@ func (v *VM) executeMinusOperator() error {
 		return fmt.Errorf("unsupported type for negation: %s", operand.Type())
 	}
 	return v.push(&object.Integer{Value: -operand.(*object.Integer).Value})
+}
+
+func (v *VM) buildArray(startIdx, endIdx int) object.Object {
+	elements := make([]object.Object, endIdx-startIdx)
+	for i := startIdx; i < endIdx; i++ {
+		elements[i-startIdx] = v.stack[i]
+	}
+	return &object.Array{Elements: elements}
 }
 
 func isTruthy(obj object.Object) bool {

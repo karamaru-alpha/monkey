@@ -252,6 +252,18 @@ func TestCompiler_Compile(t *testing.T) {
 				},
 			},
 		},
+		{
+			input: "[1, 2]",
+			expected: expected{
+				constants: []interface{}{1, 2},
+				instructions: []code.Instructions{
+					code.Make(code.OpConstant, 0),
+					code.Make(code.OpConstant, 1),
+					code.Make(code.OpArray, 2),
+					code.Make(code.OpPop),
+				},
+			},
+		},
 	} {
 		program := parser.New(lexer.New(tt.input)).ParseProgram()
 
