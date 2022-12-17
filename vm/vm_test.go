@@ -35,6 +35,7 @@ func TestVM(t *testing.T) {
 		{"if (false) {1} else {2}", 2},
 		{"if (false) {1}", Null},
 		{"let a = 1; a", 1},
+		{`"kara"+"maru"`, "karamaru"},
 	} {
 		program := parser.New(lexer.New(tt.input)).ParseProgram()
 
